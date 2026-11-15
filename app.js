@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuaX_kFPt9eRSPMkeGK7HKLku0oCQmfa0NgmQkVCVzy3w447bun124DVoTcEcCZOTT/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmvZR_yBio0OGkVN1X3Mm3Xk54NqWLrUyWfDybdzXJicb4wANrHCIl6vevpncx7uwE/exec";
 const API_KEY = "KMM_DAERAH_SECRET_KEY_2026";
 
 let appData = {
@@ -6,6 +6,7 @@ let appData = {
   tupoksi: [],
   agenda: [],
   piket: [],
+  tupoksiPiket: [],
   panitia: [],
   monitoring: []
 };
@@ -75,6 +76,7 @@ async function fetchAllData() {
       renderTupoksi();
       renderAgenda();
       renderPiket();
+      renderTupoksiPiket();
       renderPanitia();
       renderMonitoring();
 
@@ -213,6 +215,35 @@ function renderAgenda() {
   }).join("");
 }
 
+// Render Tupoksi Piket (Terpisah di bagian atas Navbar Piket secara rapi)
+function renderTupoksiPiket() {
+  const container = document.getElementById("tupoksi-piket-container");
+  if (appData.tupoksiPiket.length === 0) {
+    container.innerHTML = `<div class="col-span-full py-6 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">Belum ada panduan tupoksi piket.</div>`;
+    return;
+  }
+
+  container.innerHTML = appData.tupoksiPiket.map((item) => {
+    const lines = String(item.IsiTupoksi).split("\n").map(l => l.trim()).filter(Boolean);
+    const listHtml = lines.map(line => `
+      <li class="flex items-start gap-2.5 text-sm text-slate-700 leading-relaxed">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-700 mt-2 shrink-0"></span>
+        <span>${escapeHtml(line.replace(/^[-•*]\s*/, ""))}</span>
+      </li>
+    `).join("");
+
+    return `
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <h4 class="font-bold text-base text-emerald-950 mb-3 flex items-center gap-2">
+          <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          ${escapeHtml(item.JudulBagian)}
+        </h4>
+        <ul class="space-y-2">${listHtml}</ul>
+      </div>
+    `;
+  }).join("");
+}
+
 // Render Jadwal Piket Bulanan (Maksimal 3 Bulan Terbaru dengan Grid Rapi)
 function renderPiket() {
   const container = document.getElementById("piket-container");
@@ -221,7 +252,6 @@ function renderPiket() {
     return;
   }
 
-  // Ambil maksimal 3 data piket terakhir
   const latestPiket = appData.piket.slice(-3);
 
   container.innerHTML = latestPiket.map((item) => {
@@ -367,9 +397,13 @@ const adminFieldConfigs = {
     { name: "NamaPetugas", label: "Daftar Anggota Terjadwal (Pisahkan dengan baris baru)", type: "textarea", required: true },
     { name: "CatatanTugas", label: "Catatan Tugas Piket", type: "textarea", required: false }
   ],
+  TupoksiPiket: [
+    { name: "JudulBagian", label: "Judul Bagian Tupoksi (Contoh: Tugas Umum / Kebersihan)", type: "text", required: true },
+    { name: "IsiTupoksi", label: "Daftar Poin Tupoksi Piket (Pisahkan dengan baris baru)", type: "textarea", required: true }
+  ],
   Panitia: [
     { name: "NamaKegiatan", label: "Nama Kegiatan", type: "text", required: true },
-    { name: "DaftarPanitia", label: "Daftar Anggota Panitia (Pilih dari database atau ketik manual per baris)", type: "textarea", required: true, isPanitiaField: true },
+    { name: "DaftarPanitia", label: "Daftar Anggota Panitia (Pilih dari dropdown atau ketik manual)", type: "textarea", required: true, isPanitiaField: true },
     { name: "Keterangan", label: "Keterangan / Deskripsi", type: "text", required: false }
   ],
   Monitoring: [
@@ -395,8 +429,6 @@ function resetAdminForm() {
   
   container.innerHTML = adminFieldConfigs[currentAdminTab].map((f) => {
     if (f.isPanitiaField) {
-      // Tombol helper untuk menarik nama pengurus otomatis ke dalam daftar panitia
-      const optionsPengurus = appData.pengurus.map(p => `<option value="${escapeHtml(p.Nama)}">`).join("");
       return `
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">${f.label}</label>
@@ -440,8 +472,8 @@ function renderAdminDataList() {
   }
 
   listEl.innerHTML = items.map((item) => {
-    const title = item.Nama || item.Dapukan || item.Kegiatan || item.Bulan || item.NamaKegiatan || "Item";
-    const subtitle = item.Nama ? `${item.Dapukan} • ${item.Desa}` : (item.NamaPetugas || item.DaftarPanitia || item.Link || (item.Tupoksi ? item.Tupoksi.substring(0, 50) + "..." : ""));
+    const title = item.Nama || item.Dapukan || item.Kegiatan || item.Bulan || item.NamaKegiatan || item.JudulBagian || "Item";
+    const subtitle = item.Nama ? `${item.Dapukan} • ${item.Desa}` : (item.NamaPetugas || item.DaftarPanitia || item.IsiTupoksi || item.Link || "");
     return `
       <div class="p-3.5 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3">
         <div class="min-w-0"><p class="font-bold text-sm text-slate-900 truncate">${escapeHtml(title)}</p><p class="text-xs text-slate-500 truncate">${escapeHtml(subtitle)}</p></div>
