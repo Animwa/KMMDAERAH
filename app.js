@@ -148,6 +148,7 @@ function renderPengurus() {
 document.getElementById("search-pengurus").addEventListener("input", renderPengurus);
 document.getElementById("filter-desa").addEventListener("change", renderPengurus);
 
+// Render Tupoksi Pengurus (Menggunakan Penomoran Angka 1, 2, 3...)
 function renderTupoksi() {
   const container = document.getElementById("tupoksi-container");
   if (appData.tupoksi.length === 0) {
@@ -156,10 +157,10 @@ function renderTupoksi() {
   }
   container.innerHTML = appData.tupoksi.map((item) => {
     const lines = String(item.Tupoksi).split("\n").map((l) => l.trim()).filter((l) => l.length > 0);
-    const listHtml = lines.map((line) => `
-      <li class="flex items-start gap-2.5 text-sm text-slate-700 leading-relaxed">
-        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 shrink-0"></span>
-        <span>${escapeHtml(line.replace(/^[-•*]\s*/, ""))}</span>
+    const listHtml = lines.map((line, idx) => `
+      <li class="flex items-start gap-2.5 text-sm text-slate-700 leading-relaxed py-0.5">
+        <span class="text-amber-700 font-extrabold min-w-[1.25rem]">${idx + 1}.</span>
+        <span>${escapeHtml(line.replace(/^([-•*]|\d+[\.\)])\s*/, ""))}</span>
       </li>
     `).join("");
 
@@ -169,7 +170,7 @@ function renderTupoksi() {
           <div class="w-9 h-9 rounded-lg bg-emerald-900 text-amber-400 flex items-center justify-center font-bold text-sm shrink-0">📋</div>
           <h3 class="font-bold text-lg text-emerald-950">${escapeHtml(item.Dapukan)}</h3>
         </div>
-        <ul class="space-y-2.5">${listHtml}</ul>
+        <ol class="space-y-2 list-none">${listHtml}</ol>
       </div>
     `;
   }).join("");
@@ -215,7 +216,7 @@ function renderAgenda() {
   }).join("");
 }
 
-// Render Tupoksi Piket (Terpisah di bagian atas Navbar Piket secara rapi)
+// Render Tupoksi Piket (Terpisah di bagian atas Navbar Piket - Menggunakan Angka 1, 2, 3...)
 function renderTupoksiPiket() {
   const container = document.getElementById("tupoksi-piket-container");
   if (appData.tupoksiPiket.length === 0) {
@@ -225,10 +226,10 @@ function renderTupoksiPiket() {
 
   container.innerHTML = appData.tupoksiPiket.map((item) => {
     const lines = String(item.IsiTupoksi).split("\n").map(l => l.trim()).filter(Boolean);
-    const listHtml = lines.map(line => `
-      <li class="flex items-start gap-2.5 text-sm text-slate-700 leading-relaxed">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-700 mt-2 shrink-0"></span>
-        <span>${escapeHtml(line.replace(/^[-•*]\s*/, ""))}</span>
+    const listHtml = lines.map((line, idx) => `
+      <li class="flex items-start gap-2.5 text-sm text-slate-700 leading-relaxed py-0.5">
+        <span class="text-emerald-800 font-extrabold min-w-[1.25rem]">${idx + 1}.</span>
+        <span>${escapeHtml(line.replace(/^([-•*]|\d+[\.\)])\s*/, ""))}</span>
       </li>
     `).join("");
 
@@ -238,13 +239,13 @@ function renderTupoksiPiket() {
           <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           ${escapeHtml(item.JudulBagian)}
         </h4>
-        <ul class="space-y-2">${listHtml}</ul>
+        <ol class="space-y-2 list-none">${listHtml}</ol>
       </div>
     `;
   }).join("");
 }
 
-// Render Jadwal Piket Bulanan (Maksimal 3 Bulan Terbaru dengan Grid Rapi & Poin Tugas)
+// Render Jadwal Piket Bulanan (Maksimal 3 Bulan Terbaru dengan Penomoran Angka 1, 2, 3...)
 function renderPiket() {
   const container = document.getElementById("piket-container");
   if (appData.piket.length === 0) {
@@ -256,25 +257,25 @@ function renderPiket() {
   const latestPiket = appData.piket.slice(-3);
 
   container.innerHTML = latestPiket.map((item) => {
-    // Format Anggota Terjadwal
+    // Format Anggota Terjadwal dengan Angka
     const petugasList = String(item.NamaPetugas).split("\n").map(l => l.trim()).filter(Boolean);
-    const petugasHtml = petugasList.map(p => `
-      <li class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2.5 py-1">
-        <span class="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
-        <span>${escapeHtml(p)}</span>
+    const petugasHtml = petugasList.map((p, idx) => `
+      <li class="text-sm sm:text-base font-bold text-slate-900 flex items-start gap-2.5 py-1">
+        <span class="text-emerald-700 font-extrabold min-w-[1.25rem]">${idx + 1}.</span>
+        <span>${escapeHtml(p.replace(/^([-•*]|\d+[\.\)])\s*/, ""))}</span>
       </li>
     `).join("");
 
-    // Format Catatan Tugas Menjadi Poin-Poin
+    // Format Catatan Tugas Menjadi Angka
     const catatanList = String(item.CatatanTugas || "Menjaga kebersihan dan ketertiban sekretariat.")
       .split("\n")
       .map(l => l.trim())
       .filter(Boolean);
     
-    const catatanHtml = catatanList.map(c => `
+    const catatanHtml = catatanList.map((c, idx) => `
       <li class="flex items-start gap-2 text-xs sm:text-sm text-emerald-900 leading-relaxed py-0.5">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-700 mt-1.5 shrink-0"></span>
-        <span>${escapeHtml(c.replace(/^[-•*]\s*/, ""))}</span>
+        <span class="text-emerald-800 font-bold min-w-[1.1rem]">${idx + 1}.</span>
+        <span>${escapeHtml(c.replace(/^([-•*]|\d+[\.\)])\s*/, ""))}</span>
       </li>
     `).join("");
 
@@ -290,17 +291,17 @@ function renderPiket() {
 
           <div class="mb-5">
             <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Anggota Terjadwal:</p>
-            <ul class="space-y-1 bg-slate-50/80 p-3.5 rounded-xl border border-slate-100">${petugasHtml || "<li>-</li>"}</ul>
+            <ol class="space-y-1 bg-slate-50/80 p-3.5 rounded-xl border border-slate-100 list-none">${petugasHtml || "<li>-</li>"}</ol>
           </div>
         </div>
 
-        <!-- Catatan Tugas Piket Berbentuk Poin-Poin -->
+        <!-- Catatan Tugas Piket Berbentuk Angka -->
         <div class="bg-emerald-50/80 border border-emerald-100 p-4 rounded-xl mt-2">
           <p class="text-xs font-bold text-emerald-950 uppercase tracking-wider mb-2 flex items-center gap-1.5">
             <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             Catatan Tugas Piket:
           </p>
-          <ul class="space-y-1">${catatanHtml}</ul>
+          <ol class="space-y-1 list-none">${catatanHtml}</ol>
         </div>
       </div>
     `;
