@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kepengurusan KMM Daerah - Portal Informasi & Koordinasi</title>
-  <!-- Tailwind CSS via CDN -->
+  <title>KMM Daerah</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Plus Jakarta Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script>
     tailwind.config = {
@@ -30,7 +28,6 @@
     }
   </script>
   <style>
-    /* Mencegah seleksi teks agar tidak mudah di-copy sembarangan */
     body {
       -webkit-user-select: none;
       -moz-user-select: none;
@@ -43,7 +40,6 @@
       -ms-user-select: text;
       user-select: text;
     }
-    /* Efek blur otomatis jika DevTools terdeteksi */
     body.devtools-open #main-wrapper {
       filter: blur(18px);
       pointer-events: none;
@@ -52,13 +48,13 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-emerald-800 selection:text-white">
 
-  <!-- Peringatan Overlay jika DevTools Terbuka -->
+  <!-- Peringatan DevTools -->
   <div id="devtools-warning" class="hidden fixed inset-0 z-[9999] bg-emerald-950/95 text-white flex flex-col items-center justify-center p-6 text-center">
     <div class="w-16 h-16 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4">
       <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
     </div>
     <h2 class="text-2xl font-bold mb-2">Akses Inspeksi Dibatasi</h2>
-    <p class="text-slate-300 max-w-md text-sm">Demi menjaga keamanan data kepengurusan KMM Daerah, silakan tutup Developer Tools (Inspect Element) untuk kembali melihat halaman ini.</p>
+    <p class="text-slate-300 max-w-md text-sm">Demi menjaga keamanan data KMM Daerah, silakan tutup Developer Tools.</p>
   </div>
 
   <div id="main-wrapper" class="transition-all duration-300">
@@ -66,28 +62,29 @@
     <header class="sticky top-0 z-40 bg-emerald-900/95 backdrop-blur-md border-b border-emerald-800 text-white shadow-lg">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16 md:h-20">
-          <!-- Brand Logo (Trigger Rahasia 5x Klik di sini) -->
           <div id="secret-admin-trigger" class="flex items-center gap-3 cursor-pointer">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-emerald-950 font-extrabold text-lg shadow-md">
               KMM
             </div>
             <div>
               <span class="font-bold text-lg md:text-xl tracking-tight block leading-none">KMM DAERAH</span>
-              <span class="text-[11px] text-emerald-300 font-medium tracking-wider uppercase">Portal Kepengurusan</span>
+              <span class="text-[11px] text-emerald-300 font-medium tracking-wider uppercase">KARANGANYAR BARAT</span>
             </div>
           </div>
 
           <!-- Desktop Menu -->
-          <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+          <nav class="hidden xl:flex items-center space-x-1">
             <a href="#beranda" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Beranda</a>
-            <a href="#pengurus" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Struktur Pengurus</a>
-            <a href="#tupoksi" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Tupoksi Pengurus</a>
-            <a href="#agenda" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Agenda Kegiatan</a>
+            <a href="#pengurus" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Struktur</a>
+            <a href="#tupoksi" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Tupoksi</a>
+            <a href="#agenda" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Agenda</a>
+            <a href="#piket" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Piket Bulanan</a>
+            <a href="#panitia" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Panitia Kecil</a>
             <a href="#monitoring" class="px-3 py-2 rounded-lg text-sm font-medium bg-amber-500 text-emerald-950 hover:bg-amber-400 font-semibold transition shadow-sm">Monitoring</a>
           </nav>
 
-          <!-- Mobile Hamburger Button -->
-          <div class="md:hidden">
+          <!-- Mobile Hamburger -->
+          <div class="xl:hidden">
             <button id="mobile-menu-btn" type="button" class="p-2 rounded-lg text-emerald-200 hover:text-white hover:bg-emerald-800 focus:outline-none">
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path id="hamburger-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -97,17 +94,19 @@
         </div>
       </div>
 
-      <!-- Mobile Dropdown Menu -->
-      <div id="mobile-menu" class="hidden md:hidden bg-emerald-950 border-t border-emerald-800 px-4 pt-2 pb-4 space-y-1">
+      <!-- Mobile Dropdown -->
+      <div id="mobile-menu" class="hidden xl:hidden bg-emerald-950 border-t border-emerald-800 px-4 pt-2 pb-4 space-y-1">
         <a href="#beranda" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium hover:bg-emerald-800">Beranda</a>
         <a href="#pengurus" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium hover:bg-emerald-800">Struktur Pengurus</a>
         <a href="#tupoksi" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium hover:bg-emerald-800">Tupoksi Pengurus</a>
         <a href="#agenda" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium hover:bg-emerald-800">Agenda Kegiatan</a>
+        <a href="#piket" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium hover:bg-emerald-800">Piket Bulanan</a>
+        <a href="#panitia" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium hover:bg-emerald-800">Panitia Kecil</a>
         <a href="#monitoring" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-semibold text-amber-400 hover:bg-emerald-800">Monitoring</a>
       </div>
     </header>
 
-    <!-- 1. BERANDA (DASHBOARD HERO) -->
+    <!-- 1. BERANDA -->
     <section id="beranda" class="relative bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-850 text-white py-16 md:py-24 overflow-hidden">
       <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fbbf24_1px,transparent_1px)] [background-size:24px_24px]"></div>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -121,25 +120,25 @@
               Sinergi Kepengurusan <span class="text-amber-400">KMM Daerah</span> yang Tertib & Amanah
             </h1>
             <p class="text-emerald-100/90 text-base sm:text-lg max-w-2xl leading-relaxed">
-              Pusat informasi resmi susunan pengurus, pembagian dapukan, rincian tugas pokok dan fungsi (tupoksi), jadwal agenda kegiatan, serta tautan monitoring musyawarah secara real-time.
+              Pusat informasi resmi susunan pengurus, dapukan, tupoksi, agenda kegiatan, jadwal piket bulanan, panitia kecil, serta tautan monitoring.
             </p>
             <div class="flex flex-wrap gap-3 pt-2">
               <a href="#monitoring" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-emerald-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition flex items-center gap-2">
                 <span>Buka Link Monitoring</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
               </a>
-              <a href="#agenda" class="px-6 py-3 rounded-xl bg-emerald-800/70 hover:bg-emerald-800 border border-emerald-700 text-white font-semibold text-sm transition">
-                Lihat Agenda Terdekat
+              <a href="#piket" class="px-6 py-3 rounded-xl bg-emerald-800/70 hover:bg-emerald-800 border border-emerald-700 text-white font-semibold text-sm transition">
+                Cek Piket Bulanan
               </a>
             </div>
           </div>
 
-          <!-- Kartu Statistik & Akses Cepat -->
+          <!-- Statistik -->
           <div class="lg:col-span-5">
             <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-6 shadow-2xl space-y-6">
               <div class="flex items-center justify-between border-b border-white/10 pb-4">
                 <h2 class="font-bold text-lg text-amber-300">Ringkasan Data Aktif</h2>
-                <button onclick="fetchAllData()" title="Muat Ulang Data" class="text-xs bg-emerald-800 hover:bg-emerald-700 px-3 py-1.5 rounded-lg text-emerald-100 transition flex items-center gap-1.5">
+                <button onclick="fetchAllData()" title="Muat Ulang" class="text-xs bg-emerald-800 hover:bg-emerald-700 px-3 py-1.5 rounded-lg text-emerald-100 transition flex items-center gap-1.5">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                   Refresh
                 </button>
@@ -147,19 +146,19 @@
               
               <div class="grid grid-cols-2 gap-4">
                 <div class="bg-emerald-950/60 p-4 rounded-xl border border-emerald-800/60">
-                  <p class="text-xs text-emerald-300 font-medium">Total Pengurus</p>
+                  <p class="text-xs text-emerald-300 font-medium">Pengurus</p>
                   <p id="stat-pengurus" class="text-2xl sm:text-3xl font-extrabold text-white mt-1">-</p>
                 </div>
                 <div class="bg-emerald-950/60 p-4 rounded-xl border border-emerald-800/60">
-                  <p class="text-xs text-emerald-300 font-medium">Bidang / Dapukan</p>
-                  <p id="stat-tupoksi" class="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-1">-</p>
+                  <p class="text-xs text-emerald-300 font-medium">Piket Bulanan</p>
+                  <p id="stat-piket" class="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-1">-</p>
                 </div>
                 <div class="bg-emerald-950/60 p-4 rounded-xl border border-emerald-800/60">
-                  <p class="text-xs text-emerald-300 font-medium">Agenda Kegiatan</p>
-                  <p id="stat-agenda" class="text-2xl sm:text-3xl font-extrabold text-white mt-1">-</p>
+                  <p class="text-xs text-emerald-300 font-medium">Panitia Kecil</p>
+                  <p id="stat-panitia" class="text-2xl sm:text-3xl font-extrabold text-white mt-1">-</p>
                 </div>
                 <div class="bg-emerald-950/60 p-4 rounded-xl border border-emerald-800/60">
-                  <p class="text-xs text-emerald-300 font-medium">Link Monitoring</p>
+                  <p class="text-xs text-emerald-300 font-medium">Monitoring</p>
                   <p id="stat-monitoring" class="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-1">-</p>
                 </div>
               </div>
@@ -178,21 +177,18 @@
     <section id="pengurus" class="py-16 md:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Direktori SDM</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Direktori Kepengurusan</span>
           <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Struktur Pengurus KMM Daerah</h2>
           <p class="text-slate-600 text-sm mt-1">Daftar pengurus berdasarkan dapukan serta asal desa dan kelompok.</p>
         </div>
-
-        <!-- Filter & Pencarian -->
         <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <input type="text" id="search-pengurus" placeholder="Cari nama atau dapukan..." class="px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 outline-none bg-white w-full sm:w-64" />
+          <input type="text" id="search-pengurus" placeholder="Cari nama atau dapukan..." class="px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-600 outline-none bg-white w-full sm:w-64" />
           <select id="filter-desa" class="px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-600 outline-none bg-white">
             <option value="">Semua Desa</option>
           </select>
         </div>
       </div>
 
-      <!-- Tabel Responsif Pengurus -->
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
@@ -219,16 +215,15 @@
         <div class="max-w-3xl mb-10">
           <span class="text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-3 py-1 rounded-full">Pedoman Kerja</span>
           <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Tupoksi Pengurus</h2>
-          <p class="text-slate-600 text-sm mt-1">Rincian tugas pokok dan fungsi kegiatan untuk masing-masing dapukan kepengurusan.</p>
+          <p class="text-slate-600 text-sm mt-1">Rincian tugas pokok dan fungsi kegiatan untuk masing-masing dapukan.</p>
         </div>
-
         <div id="tupoksi-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="col-span-full py-10 text-center text-slate-400">Memuat data tupoksi...</div>
         </div>
       </div>
     </section>
 
-    <!-- 4. AGENDA KEGIATAN KMM -->
+    <!-- 4. AGENDA KEGIATAN -->
     <section id="agenda" class="py-16 md:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
@@ -236,26 +231,50 @@
           <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Agenda Kegiatan KMM</h2>
           <p class="text-slate-600 text-sm mt-1">Kalender kegiatan rutin maupun insidental KMM Daerah.</p>
         </div>
-
         <div class="flex gap-2">
           <button onclick="filterAgenda('all')" class="agenda-filter-btn active px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-900 text-white transition" data-filter="all">Semua</button>
           <button onclick="filterAgenda('upcoming')" class="agenda-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition" data-filter="upcoming">Mendatang</button>
           <button onclick="filterAgenda('past')" class="agenda-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition" data-filter="past">Selesai</button>
         </div>
       </div>
-
       <div id="agenda-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div class="col-span-full py-10 text-center text-slate-400">Memuat jadwal agenda...</div>
       </div>
     </section>
 
-    <!-- 5. MONITORING MUSYAWARAH & KEGIATAN -->
-    <section id="monitoring" class="py-16 md:py-20 bg-emerald-950 text-white">
+    <!-- 5. JADWAL PIKET BULANAN (Grid Rapi 3 Bulan) -->
+    <section id="piket" class="py-16 md:py-20 bg-slate-100/80 border-y border-slate-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mb-10">
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Piket & Tugas</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Jadwal Piket Bulanan</h2>
+          <p class="text-slate-600 text-sm mt-1">Daftar petugas piket beserta catatan tugas penjagaan per periode bulan.</p>
+        </div>
+        <div id="piket-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="col-span-full py-10 text-center text-slate-400">Memuat jadwal piket...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. PANITIA KECIL -->
+    <section id="panitia" class="py-16 md:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mb-10">
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-3 py-1 rounded-full">Kepanitiaan</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Panitia Kecil Kegiatan</h2>
+        <p class="text-slate-600 text-sm mt-1">Daftar penanggung jawab dan tim panitia untuk berbagai kegiatan KMM Daerah.</p>
+      </div>
+      <div id="panitia-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="col-span-full py-10 text-center text-slate-400">Memuat data panitia...</div>
+      </div>
+    </section>
+
+    <!-- 7. MONITORING (Judul Center Rapi Tanpa Tanggal) -->
+    <section id="monitoring" class="py-16 md:py-20 bg-emerald-950 text-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center mb-12">
           <span class="text-xs font-bold uppercase tracking-wider text-emerald-950 bg-amber-400 px-3 py-1 rounded-full">Evaluasi & Tautan</span>
           <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-3">Monitoring Kegiatan & Musyawarah</h2>
-          <p class="text-emerald-200/80 text-sm mt-1">Akses langsung tautan presensi, notulensi, maupun lembar monitoring kegiatan KMM Daerah.</p>
+          <p class="text-emerald-200/80 text-sm mt-1">Akses langsung tautan presensi, notulensi, dan lembar monitoring KMM Daerah.</p>
         </div>
 
         <div id="monitoring-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -264,18 +283,16 @@
       </div>
     </section>
 
-    <!-- FOOTER (Tanpa tombol login apapun) -->
+    <!-- FOOTER -->
     <footer class="bg-emerald-950 border-t border-emerald-900 text-emerald-300/80 py-8 text-center text-xs">
       <div class="max-w-7xl mx-auto px-4">
         <p class="font-semibold text-white text-sm mb-1">Kepengurusan KMM Daerah</p>
-        <p>&copy; <span id="year-now"></span> Seluruh Hak Cipta Dilindungi. Dikelola secara terpadu.</p>
+        <p>&copy; <span id="year-now"></span> Seluruh Hak Cipta Dilindungi.</p>
       </div>
     </footer>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- MODAL LOGIN ADMIN TERSEMBUNYI                                         -->
-  <!-- ===================================================================== -->
+  <!-- MODAL LOGIN ADMIN -->
   <div id="admin-login-modal" class="hidden fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 relative">
       <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
@@ -285,11 +302,11 @@
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
       </div>
       <h3 class="text-lg font-bold text-slate-900">Otentikasi Pengurus Admin</h3>
-      <p class="text-xs text-slate-500 mt-1 mb-4">Masukkan PIN Admin yang terdaftar pada sistem Spreadsheet KMM Daerah.</p>
+      <p class="text-xs text-slate-500 mt-1 mb-4">Masukkan PIN Admin yang terdaftar pada sistem Spreadsheet.</p>
       
       <form id="admin-login-form" class="space-y-4">
         <div>
-          <input type="password" id="admin-pin-input" required placeholder="Masukkan PIN Admin..." class="w-full px-4 py-3 rounded-xl border border-slate-300 text-center tracking-widest font-bold text-lg focus:ring-2 focus:ring-emerald-700 outline-none" />
+          <input type="password" id="admin-pin-input" required placeholder="PIN Admin..." class="w-full px-4 py-3 rounded-xl border border-slate-300 text-center tracking-widest font-bold text-lg focus:ring-2 focus:ring-emerald-700 outline-none" />
         </div>
         <p id="login-error-msg" class="hidden text-xs text-red-600 font-medium text-center"></p>
         <button type="submit" id="btn-submit-login" class="w-full py-3 rounded-xl bg-emerald-900 hover:bg-emerald-800 text-white font-semibold text-sm transition">
@@ -299,36 +316,33 @@
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- PANEL DASHBOARD CRUD ADMIN TERSEMBUNYI                                -->
-  <!-- ===================================================================== -->
+  <!-- PANEL CRUD ADMIN -->
   <div id="admin-panel-modal" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm overflow-y-auto p-2 sm:p-6">
     <div class="bg-white rounded-2xl max-w-5xl mx-auto my-4 shadow-2xl border border-slate-200 overflow-hidden">
-      <!-- Header Panel Admin -->
       <div class="bg-emerald-900 text-white px-6 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="px-2.5 py-1 rounded bg-amber-400 text-emerald-950 font-extrabold text-xs">ADMIN MODE</span>
           <h3 class="font-bold text-base sm:text-lg">Manajemen Data KMM Daerah</h3>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="logoutAdmin()" class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold transition">Keluar Sesi</button>
+          <button onclick="logoutAdmin()" class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold transition">Keluar</button>
           <button onclick="closeAdminPanel()" class="p-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
       </div>
 
-      <!-- Tab Navigasi CRUD -->
+      <!-- Tab CRUD -->
       <div class="border-b border-slate-200 bg-slate-50 px-6 flex overflow-x-auto gap-4">
-        <button onclick="switchAdminTab('Pengurus')" class="admin-tab-btn py-3.5 text-sm font-bold border-b-2 border-emerald-800 text-emerald-900 whitespace-nowrap" data-tab="Pengurus">1. Struktur Pengurus</button>
-        <button onclick="switchAdminTab('Tupoksi')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Tupoksi">2. Tupoksi Pengurus</button>
-        <button onclick="switchAdminTab('Agenda')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Agenda">3. Agenda Kegiatan</button>
-        <button onclick="switchAdminTab('Monitoring')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Monitoring">4. Link Monitoring</button>
+        <button onclick="switchAdminTab('Pengurus')" class="admin-tab-btn py-3.5 text-sm font-bold border-b-2 border-emerald-800 text-emerald-900 whitespace-nowrap" data-tab="Pengurus">Pengurus</button>
+        <button onclick="switchAdminTab('Tupoksi')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Tupoksi">Tupoksi</button>
+        <button onclick="switchAdminTab('Agenda')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Agenda">Agenda</button>
+        <button onclick="switchAdminTab('Piket')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Piket">Piket Bulanan</button>
+        <button onclick="switchAdminTab('Panitia')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Panitia">Panitia Kecil</button>
+        <button onclick="switchAdminTab('Monitoring')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Monitoring">Monitoring</button>
       </div>
 
-      <!-- Konten Form & Tabel Admin -->
       <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Form Tambah / Edit -->
         <div class="lg:col-span-5 bg-slate-50 p-5 rounded-xl border border-slate-200 h-fit">
           <div class="flex items-center justify-between mb-4">
             <h4 id="admin-form-title" class="font-bold text-slate-800 text-sm">Tambah Data Baru</h4>
@@ -343,18 +357,14 @@
           </form>
         </div>
 
-        <!-- Daftar Data Eksisting untuk Edit / Hapus -->
         <div class="lg:col-span-7">
-          <h4 class="font-bold text-slate-800 text-sm mb-3">Daftar Data Tersimpan (<span id="admin-list-count">0</span>)</h4>
-          <div id="admin-data-list" class="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
-            <!-- Diisi otomatis via JS -->
-          </div>
+          <h4 class="font-bold text-slate-800 text-sm mb-3">Daftar Data (<span id="admin-list-count">0</span>)</h4>
+          <div id="admin-data-list" class="space-y-2.5 max-h-[460px] overflow-y-auto pr-1"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Script Utama -->
   <script src="app.js"></script>
 </body>
 </html>
