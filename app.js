@@ -1,16 +1,12 @@
-/**
- * ============================================================================
- * KONFIGURASI UTAMA (SESUAIKAN DENGAN DEPLOYMENT APPS SCRIPT ANDA)
- * ============================================================================
- */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby0bIgcOTeToeFB6ZSQisFQW73n57H9igOUMBJJAs5ZftJvbuHPAf5Rm_ZTabTRxBhz/exec";
-const API_KEY = "KMM_DAERAH_SECRET_KEY_2026"; // Harus sama persis dengan di Code.gs
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuaX_kFPt9eRSPMkeGK7HKLku0oCQmfa0NgmQkVCVzy3w447bun124DVoTcEcCZOTT/exec";
+const API_KEY = "KMM_DAERAH_SECRET_KEY_2026";
 
-// State Global Aplikasi
 let appData = {
   pengurus: [],
   tupoksi: [],
   agenda: [],
+  piket: [],
+  panitia: [],
   monitoring: []
 };
 let currentAdminTab = "Pengurus";
@@ -18,51 +14,25 @@ let currentAgendaFilter = "all";
 
 document.getElementById("year-now").textContent = new Date().getFullYear();
 
-/**
- * ============================================================================
- * 1. PROTEKSI KEAMANAN CLIENT-SIDE (ANTI-INSPECT & DEVTOOLS)
- * ============================================================================
- */
+// 1. KEAMANAN CLIENT-SIDE
 (function initSecurityShield() {
-  // 1. Blokir Klik Kanan
-  document.addEventListener("contextmenu", (e) => {
-    e.preventDefault();
-  });
-
-  // 2. Blokir Shortcut Keyboard DevTools & View Source (Kecuali Ctrl+Alt+M untuk Admin)
+  document.addEventListener("contextmenu", (e) => e.preventDefault());
   document.addEventListener("keydown", (e) => {
-    // Trigger Rahasia Admin: Ctrl + Alt + M
     if (e.ctrlKey && e.altKey && (e.key === "m" || e.key === "M")) {
       e.preventDefault();
       openAdminAccess();
       return;
     }
-
-    // Blokir F12
-    if (e.key === "F12") {
-      e.preventDefault();
-      return false;
-    }
-    // Blokir Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
-    if (e.ctrlKey && e.shiftKey && ["I", "i", "J", "j", "C", "c"].includes(e.key)) {
-      e.preventDefault();
-      return false;
-    }
-    // Blokir Ctrl+U (View Source) & Ctrl+S (Save Page)
-    if (e.ctrlKey && ["U", "u", "S", "s"].includes(e.key)) {
+    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["I", "i", "J", "j", "C", "c"].includes(e.key)) || (e.ctrlKey && ["U", "u", "S", "s"].includes(e.key))) {
       e.preventDefault();
       return false;
     }
   });
 
-  // 3. Deteksi Pembukaan DevTools via Perbedaan Ukuran Viewport & Debugger
   const warningEl = document.getElementById("devtools-warning");
-  const checkDevTools = () => {
-    const threshold = 160;
-    const widthDiff = window.outerWidth - window.innerWidth > threshold;
-    const heightDiff = window.outerHeight - window.innerHeight > threshold;
-
-    // Hanya aktifkan blokir visual jika bukan sedang login admin
+  setInterval(() => {
+    const widthDiff = window.outerWidth - window.innerWidth > 160;
+    const heightDiff = window.outerHeight - window.innerHeight > 160;
     if ((widthDiff || heightDiff) && !sessionStorage.getItem("kmm_admin_token")) {
       document.body.classList.add("devtools-open");
       warningEl.classList.remove("hidden");
@@ -70,35 +40,18 @@ document.getElementById("year-now").textContent = new Date().getFullYear();
       document.body.classList.remove("devtools-open");
       warningEl.classList.add("hidden");
     }
-  };
-
-  setInterval(checkDevTools, 1000);
+  }, 1000);
 })();
 
-/**
- * ============================================================================
- * 2. TRIGGER RAHASIA ADMIN (5X KLIK DALAM < 3 DETIK)
- * ============================================================================
- */
+// 2. TRIGGER RAHASIA ADMIN (5x KLIK)
 (function initSecretClickTrigger() {
   let clickCount = 0;
   let clickTimer = null;
-
-  const triggerElements = [
-    document.getElementById("secret-admin-trigger"),
-    document.getElementById("hero-title-trigger")
-  ];
-
-  triggerElements.forEach((el) => {
+  [document.getElementById("secret-admin-trigger"), document.getElementById("hero-title-trigger")].forEach((el) => {
     if (!el) return;
     el.addEventListener("click", () => {
       clickCount++;
-      if (clickCount === 1) {
-        clickTimer = setTimeout(() => {
-          clickCount = 0;
-        }, 3000); // Reset hitungan jika lebih dari 3 detik
-      }
-
+      if (clickCount === 1) clickTimer = setTimeout(() => { clickCount = 0; }, 3000);
       if (clickCount >= 5) {
         clearTimeout(clickTimer);
         clickCount = 0;
@@ -108,11 +61,7 @@ document.getElementById("year-now").textContent = new Date().getFullYear();
   });
 })();
 
-/**
- * ============================================================================
- * 3. FETCH DATA & RENDER TAMPILAN PUBLIK
- * ============================================================================
- */
+// 3. FETCH DATA
 async function fetchAllData() {
   try {
     const response = await fetch(`${SCRIPT_URL}?api_key=${encodeURIComponent(API_KEY)}`);
@@ -125,14 +74,13 @@ async function fetchAllData() {
       renderPengurus();
       renderTupoksi();
       renderAgenda();
+      renderPiket();
+      renderPanitia();
       renderMonitoring();
 
-      // Jika panel admin sedang terbuka, perbarui juga list admin
       if (!document.getElementById("admin-panel-modal").classList.contains("hidden")) {
         renderAdminDataList();
       }
-    } else {
-      console.error("Gagal mengambil data:", result.message);
     }
   } catch (error) {
     console.error("Koneksi API gagal:", error);
@@ -141,16 +89,12 @@ async function fetchAllData() {
 
 function updateDashboardStats() {
   document.getElementById("stat-pengurus").textContent = appData.pengurus.length;
-  document.getElementById("stat-tupoksi").textContent = appData.tupoksi.length;
-  document.getElementById("stat-agenda").textContent = appData.agenda.length;
+  document.getElementById("stat-piket").textContent = appData.piket.length;
+  document.getElementById("stat-panitia").textContent = appData.panitia.length;
   document.getElementById("stat-monitoring").textContent = appData.monitoring.length;
 
-  // Cari agenda terdekat
   const today = new Date().toISOString().split("T")[0];
-  const upcoming = appData.agenda
-    .filter((a) => a.Tanggal >= today)
-    .sort((a, b) => a.Tanggal.localeCompare(b.Tanggal));
-
+  const upcoming = appData.agenda.filter((a) => a.Tanggal >= today).sort((a, b) => a.Tanggal.localeCompare(b.Tanggal));
   const highlightEl = document.getElementById("highlight-agenda");
   if (upcoming.length > 0) {
     highlightEl.textContent = `${upcoming[0].Kegiatan} (${formatTanggalIndo(upcoming[0].Tanggal)})`;
@@ -161,12 +105,10 @@ function updateDashboardStats() {
   }
 }
 
-// --- Render Struktur Pengurus ---
 function populateDesaFilter() {
   const select = document.getElementById("filter-desa");
   const currentVal = select.value;
   const desaSet = new Set(appData.pengurus.map((p) => p.Desa).filter(Boolean));
-  
   select.innerHTML = `<option value="">Semua Desa</option>`;
   desaSet.forEach((desa) => {
     select.innerHTML += `<option value="${escapeHtml(desa)}">${escapeHtml(desa)}</option>`;
@@ -180,10 +122,7 @@ function renderPengurus() {
   const filterDesa = document.getElementById("filter-desa").value;
 
   const filtered = appData.pengurus.filter((item) => {
-    const matchText =
-      String(item.Nama).toLowerCase().includes(keyword) ||
-      String(item.Dapukan).toLowerCase().includes(keyword) ||
-      String(item.Kelompok).toLowerCase().includes(keyword);
+    const matchText = String(item.Nama).toLowerCase().includes(keyword) || String(item.Dapukan).toLowerCase().includes(keyword) || String(item.Kelompok).toLowerCase().includes(keyword);
     const matchDesa = filterDesa === "" || item.Desa === filterDesa;
     return matchText && matchDesa;
   });
@@ -193,79 +132,51 @@ function renderPengurus() {
     return;
   }
 
-  tbody.innerHTML = filtered
-    .map(
-      (item, index) => `
-      <tr class="hover:bg-emerald-50/50 transition">
-        <td class="py-3.5 px-6 text-slate-500 font-medium">${index + 1}</td>
-        <td class="py-3.5 px-6 font-bold text-slate-900">${escapeHtml(item.Nama)}</td>
-        <td class="py-3.5 px-6">
-          <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-semibold text-xs">
-            ${escapeHtml(item.Dapukan)}
-          </span>
-        </td>
-        <td class="py-3.5 px-6 text-slate-700">${escapeHtml(item.Desa)}</td>
-        <td class="py-3.5 px-6 text-slate-700">${escapeHtml(item.Kelompok)}</td>
-      </tr>
-    `
-    )
-    .join("");
+  tbody.innerHTML = filtered.map((item, index) => `
+    <tr class="hover:bg-emerald-50/50 transition">
+      <td class="py-3.5 px-6 text-slate-500 font-medium">${index + 1}</td>
+      <td class="py-3.5 px-6 font-bold text-slate-900">${escapeHtml(item.Nama)}</td>
+      <td class="py-3.5 px-6"><span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-semibold text-xs">${escapeHtml(item.Dapukan)}</span></td>
+      <td class="py-3.5 px-6 text-slate-700">${escapeHtml(item.Desa)}</td>
+      <td class="py-3.5 px-6 text-slate-700">${escapeHtml(item.Kelompok)}</td>
+    </tr>
+  `).join("");
 }
 
 document.getElementById("search-pengurus").addEventListener("input", renderPengurus);
 document.getElementById("filter-desa").addEventListener("change", renderPengurus);
 
-// --- Render Tupoksi Pengurus (Mendukung teks panjang tanpa batas) ---
 function renderTupoksi() {
   const container = document.getElementById("tupoksi-container");
   if (appData.tupoksi.length === 0) {
-    container.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400">Belum ada rincian tupoksi yang ditambahkan.</div>`;
+    container.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400">Belum ada rincian tupoksi.</div>`;
     return;
   }
+  container.innerHTML = appData.tupoksi.map((item) => {
+    const lines = String(item.Tupoksi).split("\n").map((l) => l.trim()).filter((l) => l.length > 0);
+    const listHtml = lines.map((line) => `
+      <li class="flex items-start gap-2.5 text-sm text-slate-700 leading-relaxed">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 shrink-0"></span>
+        <span>${escapeHtml(line.replace(/^[-•*]\s*/, ""))}</span>
+      </li>
+    `).join("");
 
-  container.innerHTML = appData.tupoksi
-    .map((item) => {
-      // Ubah baris baru (\n) menjadi poin daftar yang rapi
-      const lines = String(item.Tupoksi)
-        .split("\n")
-        .map((line) => line.trim())
-        .filter((line) => line.length > 0);
-
-      const listHtml = lines
-        .map(
-          (line) => `
-          <li class="flex items-start gap-2.5 text-sm text-slate-700 leading-relaxed">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 shrink-0"></span>
-            <span>${escapeHtml(line.replace(/^[-•*]\s*/, ""))}</span>
-          </li>
-        `
-        )
-        .join("");
-
-      return `
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition">
-          <div class="flex items-center gap-3 border-b border-slate-100 pb-3 mb-4">
-            <div class="w-9 h-9 rounded-lg bg-emerald-900 text-amber-400 flex items-center justify-center font-bold text-sm shrink-0">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-            </div>
-            <h3 class="font-bold text-lg text-emerald-950">${escapeHtml(item.Dapukan)}</h3>
-          </div>
-          <ul class="space-y-2.5">${listHtml}</ul>
+    return `
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-3 border-b border-slate-100 pb-3 mb-4">
+          <div class="w-9 h-9 rounded-lg bg-emerald-900 text-amber-400 flex items-center justify-center font-bold text-sm shrink-0">📋</div>
+          <h3 class="font-bold text-lg text-emerald-950">${escapeHtml(item.Dapukan)}</h3>
         </div>
-      `;
-    })
-    .join("");
+        <ul class="space-y-2.5">${listHtml}</ul>
+      </div>
+    `;
+  }).join("");
 }
 
-// --- Render Agenda Kegiatan ---
 function filterAgenda(type) {
   currentAgendaFilter = type;
   document.querySelectorAll(".agenda-filter-btn").forEach((btn) => {
-    if (btn.dataset.filter === type) {
-      btn.className = "agenda-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-900 text-white transition";
-    } else {
-      btn.className = "agenda-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition";
-    }
+    btn.className = btn.dataset.filter === type ? "agenda-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-900 text-white transition" : "agenda-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition";
   });
   renderAgenda();
 }
@@ -273,7 +184,6 @@ function filterAgenda(type) {
 function renderAgenda() {
   const container = document.getElementById("agenda-container");
   const today = new Date().toISOString().split("T")[0];
-
   const filtered = appData.agenda.filter((item) => {
     if (currentAgendaFilter === "upcoming") return item.Tanggal >= today;
     if (currentAgendaFilter === "past") return item.Tanggal < today;
@@ -281,75 +191,116 @@ function renderAgenda() {
   });
 
   if (filtered.length === 0) {
-    container.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400">Tidak ada agenda kegiatan pada kategori ini.</div>`;
+    container.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400">Tidak ada agenda kegiatan.</div>`;
     return;
   }
 
-  container.innerHTML = filtered
-    .map((item) => {
-      const isUpcoming = item.Tanggal >= today;
-      const badgeClass = isUpcoming
-        ? "bg-emerald-100 text-emerald-800"
-        : "bg-slate-200 text-slate-600";
-      const badgeText = isUpcoming ? "Akan Datang" : "Terlaksana";
-
-      return `
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="text-xs font-bold px-2.5 py-1 rounded-full ${badgeClass}">${badgeText}</span>
-              <span class="text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">
-                ${formatTanggalIndo(item.Tanggal)}
-              </span>
-            </div>
-            <h3 class="font-bold text-lg text-slate-900 mb-2">${escapeHtml(item.Kegiatan)}</h3>
-            ${item.WaktuTempat ? `<p class="text-xs font-medium text-emerald-700 mb-2">📍 ${escapeHtml(item.WaktuTempat)}</p>` : ""}
-            <p class="text-sm text-slate-600 leading-relaxed">${escapeHtml(item.Keterangan || "-")}</p>
+  container.innerHTML = filtered.map((item) => {
+    const isUpcoming = item.Tanggal >= today;
+    return `
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <span class="text-xs font-bold px-2.5 py-1 rounded-full ${isUpcoming ? "bg-emerald-100 text-emerald-800" : "bg-slate-200 text-slate-600"}">${isUpcoming ? "Akan Datang" : "Terlaksana"}</span>
+            <span class="text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">${formatTanggalIndo(item.Tanggal)}</span>
           </div>
+          <h3 class="font-bold text-lg text-slate-900 mb-2">${escapeHtml(item.Kegiatan)}</h3>
+          ${item.WaktuTempat ? `<p class="text-xs font-medium text-emerald-700 mb-2">📍 ${escapeHtml(item.WaktuTempat)}</p>` : ""}
+          <p class="text-sm text-slate-600 leading-relaxed">${escapeHtml(item.Keterangan || "-")}</p>
         </div>
-      `;
-    })
-    .join("");
+      </div>
+    `;
+  }).join("");
 }
 
-// --- Render Monitoring ---
+// Render Jadwal Piket Bulanan (Maksimal 3 Bulan Terbaru dengan Grid Rapi)
+function renderPiket() {
+  const container = document.getElementById("piket-container");
+  if (appData.piket.length === 0) {
+    container.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400">Belum ada jadwal piket bulanan.</div>`;
+    return;
+  }
+
+  // Ambil maksimal 3 data piket terakhir
+  const latestPiket = appData.piket.slice(-3);
+
+  container.innerHTML = latestPiket.map((item) => {
+    const petugasList = String(item.NamaPetugas).split("\n").map(l => l.trim()).filter(Boolean);
+    const petugasHtml = petugasList.map(p => `<li class="text-xs font-medium text-slate-700 flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>${escapeHtml(p)}</li>`).join("");
+
+    return `
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 font-extrabold text-xs">Periode: ${escapeHtml(item.Bulan)}</span>
+          </div>
+          <div class="mb-4">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Anggota Terjadwal:</p>
+            <ul class="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100">${petugasHtml || "<li>-</li>"}</ul>
+          </div>
+        </div>
+        <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-xl mt-2">
+          <p class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider mb-1">Catatan Tugas Piket:</p>
+          <p class="text-xs text-emerald-800 leading-relaxed">${escapeHtml(item.CatatanTugas || "Menjaga kebersihan dan ketertiban sekretariat.")}</p>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+// Render Panitia Kecil
+function renderPanitia() {
+  const container = document.getElementById("panitia-container");
+  if (appData.panitia.length === 0) {
+    container.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400">Belum ada data panitia kecil.</div>`;
+    return;
+  }
+
+  container.innerHTML = appData.panitia.map((item) => {
+    const panitiaList = String(item.DaftarPanitia).split("\n").map(l => l.trim()).filter(Boolean);
+    const panitiaHtml = panitiaList.map(p => `<span class="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-medium">${escapeHtml(p)}</span>`).join("");
+
+    return `
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div>
+          <h3 class="font-bold text-lg text-slate-900 mb-2">${escapeHtml(item.NamaKegiatan)}</h3>
+          <p class="text-xs text-slate-500 mb-4">${escapeHtml(item.Keterangan || "-")}</p>
+          <div class="mb-2">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Daftar Panitia:</p>
+            <div class="flex flex-wrap gap-1.5">${panitiaHtml || "-"}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+// Render Monitoring (Center & Tanpa Tanggal)
 function renderMonitoring() {
   const container = document.getElementById("monitoring-container");
   if (appData.monitoring.length === 0) {
-    container.innerHTML = `<div class="col-span-full py-10 text-center text-emerald-300">Belum ada tautan monitoring yang tersedia.</div>`;
+    container.innerHTML = `<div class="col-span-full py-10 text-center text-emerald-300">Belum ada tautan monitoring.</div>`;
     return;
   }
 
-  container.innerHTML = appData.monitoring
-    .map(
-      (item) => `
-      <div class="bg-emerald-900/70 border border-emerald-800 rounded-2xl p-6 flex flex-col justify-between hover:border-amber-400/50 transition">
-        <div>
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-amber-400">
-            ${escapeHtml(item.TanggalStatus || "Monitoring Aktif")}
-          </span>
-          <h3 class="font-bold text-lg text-white mt-1.5 mb-4">${escapeHtml(item.Kegiatan)}</h3>
-        </div>
-        <a href="${escapeHtml(item.Link)}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-emerald-950 font-bold text-sm text-center transition flex items-center justify-center gap-2">
-          <span>Buka Tautan Kegiatan</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-        </a>
+  container.innerHTML = appData.monitoring.map((item) => `
+    <div class="bg-emerald-900/70 border border-emerald-800 rounded-2xl p-6 flex flex-col justify-between items-center text-center hover:border-amber-400/50 transition">
+      <div class="w-full">
+        <h3 class="font-bold text-lg text-white mb-6 leading-snug px-2">${escapeHtml(item.Kegiatan)}</h3>
       </div>
-    `
-    )
-    .join("");
+      <a href="${escapeHtml(item.Link)}" target="_blank" rel="noopener noreferrer" class="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-emerald-950 font-bold text-sm text-center transition flex items-center justify-center gap-2 shadow-md">
+        <span>Buka Tautan Kegiatan</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+      </a>
+    </div>
+  `).join("");
 }
 
-/**
- * ============================================================================
- * 4. SISTEM AUTENTIKASI & CRUD ADMIN TERSEMBUNYI
- * ============================================================================
- */
+// 4. ADMIN & CRUD
 function openAdminAccess() {
   const token = sessionStorage.getItem("kmm_admin_token");
-  if (token) {
-    openAdminPanel();
-  } else {
+  if (token) openAdminPanel();
+  else {
     document.getElementById("login-error-msg").classList.add("hidden");
     document.getElementById("admin-pin-input").value = "";
     document.getElementById("admin-login-modal").classList.remove("hidden");
@@ -357,27 +308,11 @@ function openAdminAccess() {
   }
 }
 
-function closeLoginModal() {
-  document.getElementById("admin-login-modal").classList.add("hidden");
-}
+function closeLoginModal() { document.getElementById("admin-login-modal").classList.add("hidden"); }
+function openAdminPanel() { closeLoginModal(); document.getElementById("admin-panel-modal").classList.remove("hidden"); switchAdminTab("Pengurus"); }
+function closeAdminPanel() { document.getElementById("admin-panel-modal").classList.add("hidden"); }
+function logoutAdmin() { sessionStorage.removeItem("kmm_admin_token"); closeAdminPanel(); alert("Sesi Admin diakhiri."); }
 
-function openAdminPanel() {
-  closeLoginModal();
-  document.getElementById("admin-panel-modal").classList.remove("hidden");
-  switchAdminTab("Pengurus");
-}
-
-function closeAdminPanel() {
-  document.getElementById("admin-panel-modal").classList.add("hidden");
-}
-
-function logoutAdmin() {
-  sessionStorage.removeItem("kmm_admin_token");
-  closeAdminPanel();
-  alert("Sesi Admin telah diakhiri.");
-}
-
-// Proses Login Verifikasi PIN ke Google Sheets
 document.getElementById("admin-login-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const pinInput = document.getElementById("admin-pin-input").value.trim();
@@ -385,29 +320,24 @@ document.getElementById("admin-login-form").addEventListener("submit", async (e)
   const errEl = document.getElementById("login-error-msg");
 
   btn.disabled = true;
-  btn.textContent = "Memverifikasi ke Server...";
+  btn.textContent = "Verifikasi...";
   errEl.classList.add("hidden");
 
   try {
     const response = await fetch(SCRIPT_URL, {
       method: "POST",
-      body: JSON.stringify({
-        api_key: API_KEY,
-        action: "login",
-        pin: pinInput
-      })
+      body: JSON.stringify({ api_key: API_KEY, action: "login", pin: pinInput })
     });
     const res = await response.json();
-
     if (res.status === "success" && res.token) {
       sessionStorage.setItem("kmm_admin_token", res.token);
       openAdminPanel();
     } else {
-      errEl.textContent = res.message || "PIN tidak sesuai dengan Spreadsheet!";
+      errEl.textContent = res.message || "PIN salah!";
       errEl.classList.remove("hidden");
     }
   } catch (err) {
-    errEl.textContent = "Gagal terhubung ke server Apps Script.";
+    errEl.textContent = "Koneksi server gagal.";
     errEl.classList.remove("hidden");
   } finally {
     btn.disabled = false;
@@ -415,7 +345,6 @@ document.getElementById("admin-login-form").addEventListener("submit", async (e)
   }
 });
 
-// Konfigurasi Field Form Berdasarkan Tab Admin
 const adminFieldConfigs = {
   Pengurus: [
     { name: "Nama", label: "Nama Lengkap Pengurus", type: "text", required: true },
@@ -425,17 +354,26 @@ const adminFieldConfigs = {
   ],
   Tupoksi: [
     { name: "Dapukan", label: "Nama Dapukan", type: "text", required: true },
-    { name: "Tupoksi", label: "Daftar Tupoksi Kegiatan (Pisahkan tiap poin dengan Enter / baris baru, tanpa batas panjang)", type: "textarea", required: true }
+    { name: "Tupoksi", label: "Daftar Tupoksi (Pisahkan tiap poin dengan baris baru)", type: "textarea", required: true }
   ],
   Agenda: [
-    { name: "Kegiatan", label: "Nama Kegiatan KMM", type: "text", required: true },
-    { name: "Tanggal", label: "Tanggal Pelaksanaan", type: "date", required: true },
+    { name: "Kegiatan", label: "Nama Kegiatan", type: "text", required: true },
+    { name: "Tanggal", label: "Tanggal", type: "date", required: true },
     { name: "WaktuTempat", label: "Waktu & Tempat", type: "text", required: false },
-    { name: "Keterangan", label: "Deskripsi / Keterangan", type: "textarea", required: false }
+    { name: "Keterangan", label: "Keterangan", type: "textarea", required: false }
+  ],
+  Piket: [
+    { name: "Bulan", label: "Periode Bulan (Contoh: November 2026)", type: "text", required: true },
+    { name: "NamaPetugas", label: "Daftar Anggota Terjadwal (Pisahkan dengan baris baru)", type: "textarea", required: true },
+    { name: "CatatanTugas", label: "Catatan Tugas Piket", type: "textarea", required: false }
+  ],
+  Panitia: [
+    { name: "NamaKegiatan", label: "Nama Kegiatan", type: "text", required: true },
+    { name: "DaftarPanitia", label: "Daftar Anggota Panitia (Pilih dari database atau ketik manual per baris)", type: "textarea", required: true, isPanitiaField: true },
+    { name: "Keterangan", label: "Keterangan / Deskripsi", type: "text", required: false }
   ],
   Monitoring: [
     { name: "Kegiatan", label: "Nama Kegiatan / Musyawarah", type: "text", required: true },
-    { name: "TanggalStatus", label: "Tanggal / Status (Contoh: Nov 2026 - Aktif)", type: "text", required: false },
     { name: "Link", label: "URL Link Tujuan (https://...)", type: "url", required: true }
   ]
 };
@@ -443,11 +381,7 @@ const adminFieldConfigs = {
 function switchAdminTab(tabName) {
   currentAdminTab = tabName;
   document.querySelectorAll(".admin-tab-btn").forEach((btn) => {
-    if (btn.dataset.tab === tabName) {
-      btn.className = "admin-tab-btn py-3.5 text-sm font-bold border-b-2 border-emerald-800 text-emerald-900 whitespace-nowrap";
-    } else {
-      btn.className = "admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap";
-    }
+    btn.className = btn.dataset.tab === tabName ? "admin-tab-btn py-3.5 text-sm font-bold border-b-2 border-emerald-800 text-emerald-900 whitespace-nowrap" : "admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap";
   });
   resetAdminForm();
   renderAdminDataList();
@@ -457,28 +391,41 @@ function resetAdminForm() {
   document.getElementById("edit-record-id").value = "";
   document.getElementById("admin-form-title").textContent = `Tambah Data ${currentAdminTab}`;
   document.getElementById("btn-cancel-edit").classList.add("hidden");
-
   const container = document.getElementById("dynamic-form-fields");
-  const fields = adminFieldConfigs[currentAdminTab];
-
-  container.innerHTML = fields
-    .map((f) => {
-      if (f.type === "textarea") {
-        return `
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">${f.label}</label>
-            <textarea id="field-${f.name}" rows="6" ${f.required ? "required" : ""} class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-700 outline-none"></textarea>
-          </div>
-        `;
-      }
+  
+  container.innerHTML = adminFieldConfigs[currentAdminTab].map((f) => {
+    if (f.isPanitiaField) {
+      // Tombol helper untuk menarik nama pengurus otomatis ke dalam daftar panitia
+      const optionsPengurus = appData.pengurus.map(p => `<option value="${escapeHtml(p.Nama)}">`).join("");
       return `
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">${f.label}</label>
-          <input type="${f.type}" id="field-${f.name}" ${f.required ? "required" : ""} class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-700 outline-none" />
+          <div class="mb-2 flex flex-wrap gap-1">
+            <span class="text-[11px] text-slate-500">Pilih cepat dari data pengurus:</span>
+            <select id="quick-pengurus-select" onchange="appendPengurusToPanitia(this)" class="w-full text-xs px-2 py-1.5 rounded border border-slate-300 bg-white">
+              <option value="">-- Tarik Nama dari Struktur Pengurus --</option>
+              ${appData.pengurus.map(p => `<option value="${escapeHtml(p.Nama)} - ${escapeHtml(p.Dapukan)}">${escapeHtml(p.Nama)} (${escapeHtml(p.Dapukan)})</option>`).join("")}
+            </select>
+          </div>
+          <textarea id="field-${f.name}" rows="5" ${f.required ? "required" : ""} class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-700 outline-none"></textarea>
         </div>
       `;
-    })
-    .join("");
+    }
+    if (f.type === "textarea") {
+      return `<div><label class="block text-xs font-semibold text-slate-700 mb-1">${f.label}</label><textarea id="field-${f.name}" rows="5" ${f.required ? "required" : ""} class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-700 outline-none"></textarea></div>`;
+    }
+    return `<div><label class="block text-xs font-semibold text-slate-700 mb-1">${f.label}</label><input type="${f.type}" id="field-${f.name}" ${f.required ? "required" : ""} class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-700 outline-none" /></div>`;
+  }).join("");
+}
+
+function appendPengurusToPanitia(selectEl) {
+  const val = selectEl.value;
+  if (!val) return;
+  const textarea = document.getElementById("field-DaftarPanitia");
+  if (textarea) {
+    textarea.value = textarea.value ? textarea.value + "\n" + val : val;
+  }
+  selectEl.value = "";
 }
 
 function renderAdminDataList() {
@@ -488,56 +435,46 @@ function renderAdminDataList() {
   document.getElementById("admin-list-count").textContent = items.length;
 
   if (items.length === 0) {
-    listEl.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">Belum ada data pada kategori ini.</p>`;
+    listEl.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">Belum ada data.</p>`;
     return;
   }
 
-  listEl.innerHTML = items
-    .map((item) => {
-      const title = item.Nama || item.Dapukan || item.Kegiatan || "Item";
-      const subtitle = item.Dapukan && item.Nama ? `${item.Dapukan} • ${item.Desa}` : (item.Tanggal || item.Link || (item.Tupoksi ? item.Tupoksi.substring(0, 70) + "..." : ""));
-
-      return `
-        <div class="p-3.5 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3">
-          <div class="min-w-0">
-            <p class="font-bold text-sm text-slate-900 truncate">${escapeHtml(title)}</p>
-            <p class="text-xs text-slate-500 truncate">${escapeHtml(subtitle)}</p>
-          </div>
-          <div class="flex items-center gap-1.5 shrink-0">
-            <button onclick='editAdminRecord(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="px-2.5 py-1.5 rounded-lg bg-amber-100 text-amber-800 hover:bg-amber-200 text-xs font-semibold">Edit</button>
-            <button onclick="deleteAdminRecord('${item.ID}')" class="px-2.5 py-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 text-xs font-semibold">Hapus</button>
-          </div>
+  listEl.innerHTML = items.map((item) => {
+    const title = item.Nama || item.Dapukan || item.Kegiatan || item.Bulan || item.NamaKegiatan || "Item";
+    const subtitle = item.Nama ? `${item.Dapukan} • ${item.Desa}` : (item.NamaPetugas || item.DaftarPanitia || item.Link || (item.Tupoksi ? item.Tupoksi.substring(0, 50) + "..." : ""));
+    return `
+      <div class="p-3.5 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3">
+        <div class="min-w-0"><p class="font-bold text-sm text-slate-900 truncate">${escapeHtml(title)}</p><p class="text-xs text-slate-500 truncate">${escapeHtml(subtitle)}</p></div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button onclick='editAdminRecord(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="px-2.5 py-1.5 rounded-lg bg-amber-100 text-amber-800 text-xs font-semibold">Edit</button>
+          <button onclick="deleteAdminRecord('${item.ID}')" class="px-2.5 py-1.5 rounded-lg bg-red-100 text-red-700 text-xs font-semibold">Hapus</button>
         </div>
-      `;
-    })
-    .join("");
+      </div>
+    `;
+  }).join("");
 }
 
 function editAdminRecord(item) {
   document.getElementById("edit-record-id").value = item.ID;
   document.getElementById("admin-form-title").textContent = `Edit Data ${currentAdminTab}`;
   document.getElementById("btn-cancel-edit").classList.remove("hidden");
-
-  const fields = adminFieldConfigs[currentAdminTab];
-  fields.forEach((f) => {
+  adminFieldConfigs[currentAdminTab].forEach((f) => {
     const el = document.getElementById(`field-${f.name}`);
     if (el) el.value = item[f.name] || "";
   });
 }
 
-// Simpan Data (Create / Update)
 document.getElementById("admin-crud-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const token = sessionStorage.getItem("kmm_admin_token");
-  if (!token) return alert("Sesi habis, silakan login ulang.");
+  if (!token) return alert("Sesi habis.");
 
   const editId = document.getElementById("edit-record-id").value;
   const action = editId ? "update" : "create";
-  const fields = adminFieldConfigs[currentAdminTab];
   const record = {};
-
-  fields.forEach((f) => {
-    record[f.name] = document.getElementById(`field-${f.name}`).value;
+  adminFieldConfigs[currentAdminTab].forEach((f) => {
+    const el = document.getElementById(`field-${f.name}`);
+    if (el) record[f.name] = el.value;
   });
 
   const btn = document.getElementById("btn-save-crud");
@@ -547,84 +484,44 @@ document.getElementById("admin-crud-form").addEventListener("submit", async (e) 
   try {
     const response = await fetch(SCRIPT_URL, {
       method: "POST",
-      body: JSON.stringify({
-        api_key: API_KEY,
-        token: token,
-        action: action,
-        sheet: currentAdminTab,
-        id: editId,
-        record: record
-      })
+      body: JSON.stringify({ api_key: API_KEY, token: token, action: action, sheet: currentAdminTab, id: editId, record: record })
     });
     const res = await response.json();
-
     if (res.status === "success") {
       resetAdminForm();
       await fetchAllData();
       alert(res.message);
-    } else {
-      alert("Gagal: " + res.message);
-    }
+    } else alert("Gagal: " + res.message);
   } catch (err) {
-    alert("Terjadi kesalahan jaringan saat menyimpan data.");
+    alert("Kesalahan jaringan.");
   } finally {
     btn.disabled = false;
     btn.textContent = "Simpan ke Spreadsheet";
   }
 });
 
-// Hapus Data
 async function deleteAdminRecord(id) {
-  if (!confirm("Yakin ingin menghapus data ini dari Spreadsheet?")) return;
+  if (!confirm("Hapus data ini?")) return;
   const token = sessionStorage.getItem("kmm_admin_token");
-  if (!token) return alert("Sesi habis, silakan login ulang.");
-
   try {
     const response = await fetch(SCRIPT_URL, {
       method: "POST",
-      body: JSON.stringify({
-        api_key: API_KEY,
-        token: token,
-        action: "delete",
-        sheet: currentAdminTab,
-        id: id
-      })
+      body: JSON.stringify({ api_key: API_KEY, token: token, action: "delete", sheet: currentAdminTab, id: id })
     });
     const res = await response.json();
-
-    if (res.status === "success") {
-      await fetchAllData();
-    } else {
-      alert("Gagal menghapus: " + res.message);
-    }
+    if (res.status === "success") await fetchAllData();
+    else alert("Gagal: " + res.message);
   } catch (err) {
-    alert("Kesalahan koneksi saat menghapus data.");
+    alert("Kesalahan jaringan.");
   }
 }
 
-/**
- * ============================================================================
- * 5. UTILITAS & NAVIGASI MOBILE
- * ============================================================================
- */
-document.getElementById("mobile-menu-btn").addEventListener("click", () => {
-  document.getElementById("mobile-menu").classList.toggle("hidden");
-});
-
-document.querySelectorAll(".mobile-nav-link").forEach((link) => {
-  link.addEventListener("click", () => {
-    document.getElementById("mobile-menu").classList.add("hidden");
-  });
-});
+document.getElementById("mobile-menu-btn").addEventListener("click", () => document.getElementById("mobile-menu").classList.toggle("hidden"));
+document.querySelectorAll(".mobile-nav-link").forEach((l) => l.addEventListener("click", () => document.getElementById("mobile-menu").classList.add("hidden")));
 
 function escapeHtml(text) {
   if (text === null || text === undefined) return "";
-  return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+  return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
 function formatTanggalIndo(dateStr) {
@@ -635,5 +532,4 @@ function formatTanggalIndo(dateStr) {
   return `${parts[2]} ${months[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
 }
 
-// Jalankan fetch data saat halaman dibuka
 window.addEventListener("DOMContentLoaded", fetchAllData);
