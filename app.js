@@ -244,7 +244,7 @@ function renderTupoksiPiket() {
   }).join("");
 }
 
-// Render Jadwal Piket Bulanan (Maksimal 3 Bulan Terbaru dengan Grid Rapi)
+// Render Jadwal Piket Bulanan (Maksimal 3 Bulan Terbaru dengan Grid Rapi & Poin Tugas)
 function renderPiket() {
   const container = document.getElementById("piket-container");
   if (appData.piket.length === 0) {
@@ -252,26 +252,55 @@ function renderPiket() {
     return;
   }
 
+  // Ambil maksimal 3 data piket terakhir
   const latestPiket = appData.piket.slice(-3);
 
   container.innerHTML = latestPiket.map((item) => {
+    // Format Anggota Terjadwal
     const petugasList = String(item.NamaPetugas).split("\n").map(l => l.trim()).filter(Boolean);
-    const petugasHtml = petugasList.map(p => `<li class="text-xs font-medium text-slate-700 flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>${escapeHtml(p)}</li>`).join("");
+    const petugasHtml = petugasList.map(p => `
+      <li class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2.5 py-1">
+        <span class="w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>
+        <span>${escapeHtml(p)}</span>
+      </li>
+    `).join("");
+
+    // Format Catatan Tugas Menjadi Poin-Poin
+    const catatanList = String(item.CatatanTugas || "Menjaga kebersihan dan ketertiban sekretariat.")
+      .split("\n")
+      .map(l => l.trim())
+      .filter(Boolean);
+    
+    const catatanHtml = catatanList.map(c => `
+      <li class="flex items-start gap-2 text-xs sm:text-sm text-emerald-900 leading-relaxed py-0.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-700 mt-1.5 shrink-0"></span>
+        <span>${escapeHtml(c.replace(/^[-•*]\s*/, ""))}</span>
+      </li>
+    `).join("");
 
     return `
       <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
         <div>
-          <div class="flex items-center justify-between mb-4">
-            <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 font-extrabold text-xs">Periode: ${escapeHtml(item.Bulan)}</span>
+          <!-- Tulisan Bulan di Tengah (Center) -->
+          <div class="flex justify-center mb-5">
+            <span class="px-4 py-1.5 rounded-full bg-amber-100 text-amber-900 font-extrabold text-xs sm:text-sm tracking-wide uppercase shadow-sm">
+              Periode: ${escapeHtml(item.Bulan)}
+            </span>
           </div>
-          <div class="mb-4">
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Anggota Terjadwal:</p>
-            <ul class="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100">${petugasHtml || "<li>-</li>"}</ul>
+
+          <div class="mb-5">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Anggota Terjadwal:</p>
+            <ul class="space-y-1 bg-slate-50/80 p-3.5 rounded-xl border border-slate-100">${petugasHtml || "<li>-</li>"}</ul>
           </div>
         </div>
-        <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-xl mt-2">
-          <p class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider mb-1">Catatan Tugas Piket:</p>
-          <p class="text-xs text-emerald-800 leading-relaxed">${escapeHtml(item.CatatanTugas || "Menjaga kebersihan dan ketertiban sekretariat.")}</p>
+
+        <!-- Catatan Tugas Piket Berbentuk Poin-Poin -->
+        <div class="bg-emerald-50/80 border border-emerald-100 p-4 rounded-xl mt-2">
+          <p class="text-xs font-bold text-emerald-950 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Catatan Tugas Piket:
+          </p>
+          <ul class="space-y-1">${catatanHtml}</ul>
         </div>
       </div>
     `;
