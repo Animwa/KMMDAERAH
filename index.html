@@ -68,7 +68,7 @@
             </div>
             <div>
               <span class="font-bold text-lg md:text-xl tracking-tight block leading-none">KMM DAERAH</span>
-              <span class="text-[11px] text-emerald-300 font-medium tracking-wider uppercase">KARANGANYAR BARAT</span>
+              <span class="text-[11px] text-emerald-300 font-medium tracking-wider uppercase">Karanganyar barat</span>
             </div>
           </div>
 
@@ -78,7 +78,7 @@
             <a href="#pengurus" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Struktur</a>
             <a href="#tupoksi" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Tupoksi</a>
             <a href="#agenda" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Agenda</a>
-            <a href="#piket" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Piket Bulanan</a>
+            <a href="#piket" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Jadwal Piket</a>
             <a href="#panitia" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-800 hover:text-amber-300 transition">Panitia Kecil</a>
             <a href="#monitoring" class="px-3 py-2 rounded-lg text-sm font-medium bg-amber-500 text-emerald-950 hover:bg-amber-400 font-semibold transition shadow-sm">Monitoring</a>
           </nav>
@@ -100,7 +100,7 @@
         <a href="#pengurus" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium hover:bg-emerald-800">Struktur Pengurus</a>
         <a href="#tupoksi" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium hover:bg-emerald-800">Tupoksi Pengurus</a>
         <a href="#agenda" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium hover:bg-emerald-800">Agenda Kegiatan</a>
-        <a href="#piket" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium hover:bg-emerald-800">Piket Bulanan</a>
+        <a href="#piket" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium hover:bg-emerald-800">Jadwal Piket</a>
         <a href="#panitia" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-medium hover:bg-emerald-800">Panitia Kecil</a>
         <a href="#monitoring" class="mobile-nav-link block px-3 py-2.5 rounded-lg text-base font-semibold text-amber-400 hover:bg-emerald-800">Monitoring</a>
       </div>
@@ -128,7 +128,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
               </a>
               <a href="#piket" class="px-6 py-3 rounded-xl bg-emerald-800/70 hover:bg-emerald-800 border border-emerald-700 text-white font-semibold text-sm transition">
-                Cek Piket Bulanan
+                Cek Jadwal Piket
               </a>
             </div>
           </div>
@@ -177,7 +177,7 @@
     <section id="pengurus" class="py-16 md:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Direktori Kepengurusan</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Direktori SDM</span>
           <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Struktur Pengurus KMM Daerah</h2>
           <p class="text-slate-600 text-sm mt-1">Daftar pengurus berdasarkan dapukan serta asal desa dan kelompok.</p>
         </div>
@@ -242,16 +242,35 @@
       </div>
     </section>
 
-    <!-- 5. JADWAL PIKET BULANAN (Grid Rapi 3 Bulan) -->
+    <!-- 5. JADWAL PIKET (Tupoksi Piket Terpisah di Atas, Grid 3 Bulan di Bawah) -->
     <section id="piket" class="py-16 md:py-20 bg-slate-100/80 border-y border-slate-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mb-10">
           <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Piket & Tugas</span>
-          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Jadwal Piket Bulanan</h2>
-          <p class="text-slate-600 text-sm mt-1">Daftar petugas piket beserta catatan tugas penjagaan per periode bulan.</p>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Jadwal & Tupoksi Piket Kesekretariatan</h2>
+          <p class="text-slate-600 text-sm mt-1">Pedoman tugas piket serta jadwal penanggung jawab per periode bulan.</p>
         </div>
-        <div id="piket-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div class="col-span-full py-10 text-center text-slate-400">Memuat jadwal piket...</div>
+
+        <!-- Bagian Tupoksi / Catatan Kegiatan Piket (Terpisah di Atas Secara Rapi) -->
+        <div class="mb-12">
+          <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-700"></span>
+            Tupoksi & Panduan Tugas Piket
+          </h3>
+          <div id="tupoksi-piket-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="col-span-full py-6 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">Memuat panduan tupoksi piket...</div>
+          </div>
+        </div>
+
+        <!-- Bagian Grid 3 Bulan Jadwal Piket -->
+        <div>
+          <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            Daftar Petugas Piket Bulanan (3 Periode Terbaru)
+          </h3>
+          <div id="piket-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="col-span-full py-10 text-center text-slate-400">Memuat jadwal piket...</div>
+          </div>
         </div>
       </div>
     </section>
@@ -337,7 +356,8 @@
         <button onclick="switchAdminTab('Pengurus')" class="admin-tab-btn py-3.5 text-sm font-bold border-b-2 border-emerald-800 text-emerald-900 whitespace-nowrap" data-tab="Pengurus">Pengurus</button>
         <button onclick="switchAdminTab('Tupoksi')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Tupoksi">Tupoksi</button>
         <button onclick="switchAdminTab('Agenda')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Agenda">Agenda</button>
-        <button onclick="switchAdminTab('Piket')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Piket">Piket Bulanan</button>
+        <button onclick="switchAdminTab('Piket')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Piket">Jadwal Bulanan</button>
+        <button onclick="switchAdminTab('TupoksiPiket')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="TupoksiPiket">Tupoksi Piket</button>
         <button onclick="switchAdminTab('Panitia')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Panitia">Panitia Kecil</button>
         <button onclick="switchAdminTab('Monitoring')" class="admin-tab-btn py-3.5 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap" data-tab="Monitoring">Monitoring</button>
       </div>
