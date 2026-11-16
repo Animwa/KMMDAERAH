@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Favicon / Logo di bagian Title / Tab Browser -->
   <title>KMM Daerah</title>
+  <link rel="icon" type="image/jpeg" href="logokmm.jpeg" />
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script>
@@ -63,8 +66,9 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16 md:h-20">
           <div id="secret-admin-trigger" class="flex items-center gap-3 cursor-pointer">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-emerald-950 font-extrabold text-lg shadow-md">
-              KMM
+            <!-- Logo KMM di bagian Kiri Atas Navbar -->
+            <div class="w-10 h-10 rounded-xl overflow-hidden bg-white flex items-center justify-center shadow-md border border-amber-400/40">
+              <img src="logokmm.jpeg" alt="Logo KMM" class="w-full h-full object-cover" />
             </div>
             <div>
               <span class="font-bold text-lg md:text-xl tracking-tight block leading-none">KMM DAERAH</span>
@@ -120,7 +124,7 @@
               Sinergi Kepengurusan <span class="text-amber-400">KMM Daerah</span> yang Tertib & Amanah
             </h1>
             <p class="text-emerald-100/90 text-base sm:text-lg max-w-2xl leading-relaxed">
-              Pusat informasi resmi susunan pengurus, dapukan, tupoksi, agenda kegiatan, jadwal piket bulanan, panitia kecil, serta tautan monitoring.
+              Pusat informasi susunan pengurus, dapukan, tupoksi, agenda kegiatan, jadwal piket bulanan, panitia kecil, serta tautan monitoring.
             </p>
             <div class="flex flex-wrap gap-3 pt-2">
               <a href="#monitoring" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-emerald-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition flex items-center gap-2">
@@ -177,7 +181,7 @@
     <section id="pengurus" class="py-16 md:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Direktori SDM</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Direktori Pengurus</span>
           <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Struktur Pengurus KMM Daerah</h2>
           <p class="text-slate-600 text-sm mt-1">Daftar pengurus berdasarkan dapukan serta asal desa dan kelompok.</p>
         </div>
@@ -229,7 +233,7 @@
         <div>
           <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">Jadwal & Program</span>
           <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Agenda Kegiatan KMM</h2>
-          <p class="text-slate-600 text-sm mt-1">Kalender kegiatan rutin maupun insidental KMM Daerah.</p>
+          <p class="text-slate-600 text-sm mt-1">Kalender kegiatan KMM Daerah.</p>
         </div>
         <div class="flex gap-2">
           <button onclick="filterAgenda('all')" class="agenda-filter-btn active px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-900 text-white transition" data-filter="all">Semua</button>
@@ -242,7 +246,7 @@
       </div>
     </section>
 
-    <!-- 5. JADWAL PIKET (Tupoksi Piket Terpisah di Atas, Grid 3 Bulan di Bawah) -->
+    <!-- 5. JADWAL PIKET -->
     <section id="piket" class="py-16 md:py-20 bg-slate-100/80 border-y border-slate-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mb-10">
@@ -251,7 +255,7 @@
           <p class="text-slate-600 text-sm mt-1">Pedoman tugas piket serta jadwal penanggung jawab per periode bulan.</p>
         </div>
 
-        <!-- Bagian Tupoksi / Catatan Kegiatan Piket (Terpisah di Atas Secara Rapi) -->
+        <!-- Bagian Tupoksi / Catatan Kegiatan Piket -->
         <div class="mb-12">
           <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-700"></span>
@@ -287,7 +291,7 @@
       </div>
     </section>
 
-    <!-- 7. MONITORING (Judul Center Rapi Tanpa Tanggal) -->
+    <!-- 7. MONITORING -->
     <section id="monitoring" class="py-16 md:py-20 bg-emerald-950 text-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto text-center mb-12">
